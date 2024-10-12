@@ -6,20 +6,33 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TrainOfThought.settings')
 django.setup()
 from backend.models import Creator, Bot
 
+
+def flush_database():
+    Creator.objects.all().delete()
+    Bot.objects.all().delete()
+
+
 def create_static_records():
     FILE_PATH = 'population_data.json'
     CREATORS_KEY = 'creators'
+    ADDITIONAL_USERS = ["User" , "Anonymous"]
 
     with open(FILE_PATH) as file:
         data = json.load(file)
 
+    for index, user in enumerate(ADDITIONAL_USERS):
+        print(index)
+        print(user)
+        Bot.objects.create(id=index,
+    name = user,
+    reputation = 0,
+    hatred = 0,
+    likeness = 0,
+    popularity = 0,
+    networth = 0,)
 
     for creator_data in data[CREATORS_KEY]:
         Creator.objects.create(**creator_data)
-
-
-def create_user_bot():
-    Bot.objects.create(id = 0, name="User", reputation=0, hatred=0, likeness=0, popularity=0, networth=0)
 
 
 def get_created_records():
@@ -37,6 +50,6 @@ def get_created_records():
 
 
 if __name__ == "__main__":
+    flush_database()
     create_static_records()
-    create_user_bot()
     get_created_records()
