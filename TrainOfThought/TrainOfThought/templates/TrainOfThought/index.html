@@ -56,12 +56,19 @@
         }
 
         .post {
+            display: flex;
+            align-items: flex-start;
             padding: 15px;
             border-bottom: 1px solid #e1e8ed;
         }
 
         .post:last-child {
             border-bottom: none;
+        }
+
+        .post .content-section {
+            margin-left: 10px;
+            flex: 1;
         }
 
         .post .content {
@@ -72,12 +79,20 @@
         .post .username {
             font-size: 14px;
             color: #14171a;
+            font-weight: bold;
         }
 
         .post .timestamp {
             font-size: 12px;
             color: #657786;
             margin-top: 5px;
+        }
+
+        .post img.profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
     </style>
@@ -90,6 +105,7 @@
         </div><br />
         <form class="new-post-form" id="newPostForm">
             <input type="text" id="postUsername" placeholder="What's your username?" required>
+            <input type="file" id="profilePicFile" required>
             <input type="text" id="postContent" placeholder="What's happening?" required>
             <button type="submit">Tweet</button>
         </form>
@@ -99,12 +115,22 @@
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
         const postContentInput = document.getElementById('postContent');
-        const PostUsernameInput = document.getElementById('postUsername');
+        const postUsernameInput = document.getElementById('postUsername');
+        const profilePicFileInput = document.getElementById('profilePicFile');
 
         // Function to create a new post element
-        function createPost(username, content) {
+        function createPost(username, profilePicUrl, content) {
             const postDiv = document.createElement('div');
             postDiv.classList.add('post');
+
+            // Create profile picture
+            const profilePic = document.createElement('img');
+            profilePic.classList.add('profile-pic');
+            profilePic.src = profilePicUrl;
+
+            // Content section
+            const contentSection = document.createElement('div');
+            contentSection.classList.add('content-section');
 
             const userDiv = document.createElement('div');
             userDiv.classList.add('username');
@@ -120,9 +146,14 @@
             const currentDate = new Date();
             timestampDiv.textContent = `Posted on ${currentDate.toLocaleString()}`;
 
-            postDiv.appendChild(userDiv);
-            postDiv.appendChild(contentDiv);
-            postDiv.appendChild(timestampDiv);
+            // Append username, content, and timestamp to content section
+            contentSection.appendChild(userDiv);
+            contentSection.appendChild(contentDiv);
+            contentSection.appendChild(timestampDiv);
+
+            // Append profile picture and content section to post
+            postDiv.appendChild(profilePic);
+            postDiv.appendChild(contentSection);
 
             return postDiv;
         }
@@ -131,15 +162,22 @@
         newPostForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const content = postContentInput.value.trim();
-            const user_content = PostUsernameInput.value.trim();
+            const username = postUsernameInput.value.trim();
+            const profilePicFile = profilePicFileInput.files[0];
 
-            if (content !== '' && user_content!=='') {
-                const newPost = createPost(user_content, content);
-                // Add new post to the top of the feed
-                feed.prepend(newPost);
-                // Clear input field
-                postContentInput.value = '';
-                PostUsernameInput.value = '';
+            if (content !== '' && username !== '' && profilePicFile) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const profilePicUrl = event.target.result; // Get the uploaded image as a data URL
+                    const newPost = createPost(username, profilePicUrl, content);
+                    // Add new post to the top of the feed
+                    feed.prepend(newPost);
+                    // Clear input fields
+                    postContentInput.value = '';
+                    postUsernameInput.value = '';
+                    profilePicFileInput.value = '';
+                };
+                reader.readAsDataURL(profilePicFile); // Read the uploaded file as a data URL
             }
         });
     </script>
