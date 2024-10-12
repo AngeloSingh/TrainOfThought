@@ -18,7 +18,7 @@ class PostAdmin(admin.ModelAdmin):
     ordering = ('-id',)
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('post', 'content', 'likes', 'reposts')
+    list_display = ('id','post', 'content', 'likes', 'reposts')
     search_fields = ('content',)
     list_filter = ('post',)
     ordering = ('-post',)
