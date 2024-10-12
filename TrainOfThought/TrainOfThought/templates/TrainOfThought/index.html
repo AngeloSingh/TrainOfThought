@@ -112,29 +112,68 @@
             font-size: 14px;
             color: #657786;
         }
-
     </style>
 </head>
 <body>
-
+    {% csrf_token %}
     <div class="container">
         <div class="feed" id="feed">
             <!-- Posts will be added here -->
         </div><br />
         <form class="new-post-form" id="newPostForm">
             <input type="text" id="postUsername" placeholder="What's your username?" required>
-            <input type="file" id="profilePicFile" required>
+            <input type="file" id="profilePicFile">
             <input type="text" id="postContent" placeholder="What's happening?" required>
             <button type="submit">Tweet</button>
         </form>
     </div>
+    <button type="test(Can delete or move)" onclick="createPost2()">test</button>
 
     <script>
+
+        function createPost2() {
+            /*
+            url: http://127.0.0.1:8000/create_post
+            post request
+            body: {
+                    "bot":0,
+                    "content":"hello",
+                    "image":"",
+                    "likes":0,
+                    "reposts":0
+                },
+            */
+            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            console.log("Creating post...");
+            //make http post request rest
+            const response =  fetch('http://127.0.0.1:8000/create_post/'
+            ,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    bot: 0,
+                    content: document.getElementById('postContent').value,
+                    image: document.getElementById('profilePicFile').value,
+                    likes: 0,
+                    reposts: 0
+                }),
+            });
+            console.log(response);
+
+        }
+
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
         const postContentInput = document.getElementById('postContent');
         const postUsernameInput = document.getElementById('postUsername');
         const profilePicFileInput = document.getElementById('profilePicFile');
+
+        // Default profile picture URL
+        const defaultProfilePicUrl = 'https://ih1.redbubble.net/image.5312645676.7021/st,small,507x507-pad,600x600,f8f8f8.jpg'; // Change to your default image URL
 
         // Function to create a new post element
         function createPost(username, profilePicUrl, content) {
@@ -218,10 +257,12 @@
             const username = postUsernameInput.value.trim();
             const profilePicFile = profilePicFileInput.files[0];
 
-            if (content !== '' && username !== '' && profilePicFile) {
+            let profilePicUrl = defaultProfilePicUrl; // Start with the default profile picture
+
+            if (profilePicFile) {
                 const reader = new FileReader();
                 reader.onload = function (event) {
-                    const profilePicUrl = event.target.result; // Get the uploaded image as a data URL
+                    profilePicUrl = event.target.result; // Get the uploaded image as a data URL
                     const newPost = createPost(username, profilePicUrl, content);
                     // Add new post to the top of the feed
                     feed.prepend(newPost);
@@ -229,6 +270,12 @@
                     postContentInput.value = '';
                 };
                 reader.readAsDataURL(profilePicFile); // Read the uploaded file as a data URL
+            } else {
+                const newPost = createPost(username, profilePicUrl, content);
+                // Add new post to the top of the feed
+                feed.prepend(newPost);
+                // Clear input fields
+                postContentInput.value = '';
             }
         });
     </script>

@@ -1,0 +1,103 @@
+{
+  "creators": [
+    {
+      "first_name": "Shane",
+      "last_name": "Dawson",
+      "description": "A YouTuber and filmmaker.",
+      "default_reputation": 10.0,
+      "default_hatred": 70.0,
+      "default_popularity": 80.0,
+      "networth": "20000000.00"
+    },
+    {
+      "first_name": "KSI",
+      "last_name": "Knowlegde, Strength, Integrity",
+      "description": "Cooked YouTuber, boxer and musician.",
+      "default_reputation": 80.0,
+      "default_hatred": 85.0,
+      "default_popularity": 75.0,
+      "networth": "50000000.00"
+    },
+    {
+      "first_name": "Hawk",
+      "last_name": "Tuah",
+      "description": "Has a podcast.",
+      "default_reputation": 90.0,
+      "default_hatred": 55.0,
+      "default_popularity": 95.0,
+      "networth": "5000000.00"
+    },
+    {
+      "first_name": "Logan",
+      "last_name": "Paul",
+      "description": "YouTuber, boxer, and internet personality.",
+      "default_reputation": 75.0,
+      "default_hatred": 65.0,
+      "default_popularity": 85.0,
+      "networth": "20000000.00"
+    },
+    {
+      "first_name": "Jake",
+      "last_name": "Paul",
+      "description": "YouTuber, actor, and social media influencer.",
+      "default_reputation": 70.0,
+      "default_hatred": 80.0,
+      "default_popularity": 75.0,
+      "networth": "30000000.00"
+    },
+    {
+      "first_name": "Mat",
+      "last_name": "Pat",
+      "description": "YouTuber and creator of Game Theory.",
+      "default_reputation": 85.0,
+      "default_hatred": 25.0,
+      "default_popularity": 90.0,
+      "networth": "15000000.00"
+    },
+    {
+      "first_name": "Dan",
+      "last_name": "TDM",
+      "description": "YouTuber known for gaming videos.",
+      "default_reputation": 95.0,
+      "default_hatred": 10.0,
+      "default_popularity": 95.0,
+      "networth": "5000000.00"
+    },
+    {
+      "first_name": "Darwin",
+      "last_name": "Nunez",
+      "description": "Professional footballer.",
+      "default_reputation": 80.0,
+      "default_hatred": 30.0,
+      "default_popularity": 70.0,
+      "networth": "10000000.00"
+    },
+    {
+      "first_name": "Adin",
+      "last_name": "Ross",
+      "description": "Twitch streamer and internet personality.",
+      "default_reputation": 65.0,
+      "default_hatred": 50.0,
+      "default_popularity": 80.0,
+      "networth": "1500000.00"
+    },
+    {
+      "first_name": "Mark",
+      "last_name": "iplier",
+      "description": "YouTuber known for gaming commentary and vlogs.",
+      "default_reputation": 90.0,
+      "default_hatred": 15.0,
+      "default_popularity": 95.0,
+      "networth": "50000000.00"
+    },
+    {
+      "first_name": "Jack",
+      "last_name": "septiceye",
+      "description": "YouTuber known for Let's Play videos and charity streams.",
+      "default_reputation": 95.0,
+      "default_hatred": 10.0,
+      "default_popularity": 90.0,
+      "networth": "25000000.00"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Creator, Bot, Post, Comment
 
 class CreatorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'default_reputation', 'default_hatred', 'default_likeness', 'default_popularity', 'networth')
+    list_display = ('id', 'first_name', 'last_name', 'default_reputation', 'default_hatred', 'default_popularity', 'networth')
     search_fields = ('first_name', 'last_name')
     ordering = ('-default_reputation',)
 

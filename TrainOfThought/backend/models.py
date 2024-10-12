@@ -7,7 +7,6 @@ class Creator(models.Model):
     description = models.CharField(max_length=150)
     default_reputation = models.FloatField()
     default_hatred = models.FloatField()
-    default_likeness = models.FloatField()
     default_popularity = models.FloatField()
     networth = models.DecimalField(max_digits=15, decimal_places=2)
 
@@ -37,7 +36,7 @@ class Post(models.Model):
     reposts = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"Post {self.post_id} by {self.bot.name}"
+        return f"Post {self.id} by {self.bot.name}"
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -47,4 +46,4 @@ class Comment(models.Model):
     reposts = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"Comment on Post {self.post.post_id}"
+        return f"Comment on Post {self.post.id}"
