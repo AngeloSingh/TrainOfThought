@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from .models import Bot, Post
 from django.shortcuts import render
 from TrainOfThought.scripts.ai import gpt_post_response
+from TrainOfThought.scripts.update_vars import update_attributes, get_bot_attributes
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
@@ -16,10 +17,14 @@ def gpt_post(request):
         post = request.data.get('user_input')
         person = request.data.get('person')
         response = gpt_post_response(post, person)
-        return Response({'response': response})
+        print(response)
+        likes, reposts = update_attributes(0, response[0], 0.5)
+        print (likes, reposts)
+        return Response({'response': response, 'likes': likes, 'reposts': reposts})
     else:
-        return render(request, "TrainOfThought/gpt-post.html")
-
+        # Pass through the likes and reposts in a 'data' part from the bot backend
+        likes, reposts = get_bot_attributes()
+        return render(request, "TrainOfThought/gpt-post.html", {'likes': likes, 'reposts': reposts})
 
 @api_view(["POST"])
 @csrf_protect
@@ -107,4 +112,27 @@ def get_posts(request):
             "likes": post.likes,
             "reposts": post.reposts
         })
+    return JsonResponse(data, safe=False)
+
+#get x posts
+
+@api_view(["GET"])
+@csrf_protect
+def get_x_posts(request, x):
+    '''
+    Get x post random posts
+    '''
+
+    posts = Post.objects.all().order_by('?')[:x]
+
+    data = []
+    for post in posts:
+        data.append({
+            "id": post.id,
+            "bot": post.bot.id,
+            "content": post.content,
+            "likes": post.likes,
+            "reposts": post.reposts
+        })
+        
     return JsonResponse(data, safe=False)
