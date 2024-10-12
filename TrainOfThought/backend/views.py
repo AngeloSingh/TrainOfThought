@@ -59,3 +59,53 @@ def create_post(request):
         return JsonResponse({"error": str(e)}, status=400)
     
     return JsonResponse({"success": "Post created successfully"}, safe=False)
+
+#update likes or reposts
+@api_view(["PUT"])
+@csrf_protect   
+def update_post(request, post_id):
+    '''
+    Update a post
+
+    Parameters:
+    likes (int): The number of likes the post has
+    reposts (int): The number of reposts the post has
+    '''
+    post_data = request.data
+
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post does not exist"}, status=404)
+    
+    post.likes = post_data['likes']
+    post.reposts = post_data['reposts']
+
+    try:
+        post.save()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    
+    return JsonResponse({"success": "Post updated successfully"}, safe=False)
+
+#get posts
+@api_view(["GET"])
+@csrf_protect
+def get_posts(request):
+    '''
+    Get all posts
+
+    Returns:
+    list: A list of all posts
+    '''
+    posts = Post.objects.all()
+    data = []
+    for post in posts:
+        data.append({
+            "id": post.id,
+            "bot": post.bot.id,
+            "content": post.content,
+            "likes": post.likes,
+            "reposts": post.reposts
+        })
+    return JsonResponse(data, safe=False)
