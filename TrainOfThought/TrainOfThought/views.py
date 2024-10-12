@@ -3,7 +3,6 @@ from django.shortcuts import render
 # Import the scripts/ai.py
 from .scripts.ai import gpt_post_response
 
-
 def index(request):
     return render(request, "TrainOfThought/index.html")
 
