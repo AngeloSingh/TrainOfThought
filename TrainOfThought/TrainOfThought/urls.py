@@ -21,11 +21,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('index/', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('gpt-post/', views.gpt_post, name='gpt-post'),
     path('create_post/', views.create_post, name='tick_data'),
-    path('homepage/', views.homepage, name='homepage'),
+    path('', views.homepage, name='homepage'),
     path('select_creator/', views.select_creator, name='select_creator'),
     path('get_posts/', views.get_posts, name='get_posts'),
     path('update_post/<int:post_id>/', views.update_post, name='update_post'),
