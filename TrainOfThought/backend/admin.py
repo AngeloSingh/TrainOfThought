@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Creator, Bot, Post, Comment
 
 class CreatorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'default_reputation', 'default_hatred', 'default_likeness', 'default_popularity', 'networth')
+    list_display = ('id', 'first_name', 'last_name', 'default_reputation', 'default_hatred', 'default_popularity', 'networth')
     search_fields = ('first_name', 'last_name')
     ordering = ('-default_reputation',)
 
@@ -12,10 +12,10 @@ class BotAdmin(admin.ModelAdmin):
     ordering = ('-reputation',)
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('post_id', 'bot', 'content', 'likes', 'reposts')
+    list_display = ('id', 'bot', 'content', 'likes', 'reposts')
     search_fields = ('content',)
     list_filter = ('bot',)
-    ordering = ('-post_id',)
+    ordering = ('-id',)
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('post', 'content', 'likes', 'reposts')

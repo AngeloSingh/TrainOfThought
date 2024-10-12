@@ -7,7 +7,6 @@ class Creator(models.Model):
     description = models.CharField(max_length=150)
     default_reputation = models.FloatField()
     default_hatred = models.FloatField()
-    default_likeness = models.FloatField()
     default_popularity = models.FloatField()
     networth = models.DecimalField(max_digits=15, decimal_places=2)
 
