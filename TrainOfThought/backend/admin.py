@@ -4,26 +4,25 @@ from .models import Creator, Bot, Post, Comment
 class CreatorAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'default_reputation', 'default_hatred', 'default_likeness', 'default_popularity', 'networth')
     search_fields = ('first_name', 'last_name')
-    ordering = ('-default_reputation',)  # Example ordering by default_reputation
+    ordering = ('-default_reputation',)
 
 class BotAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'reputation', 'hatred', 'likeness', 'popularity', 'networth')
     search_fields = ('name',)
-    ordering = ('-reputation',)  # Example ordering by reputation
+    ordering = ('-reputation',)
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('post_id', 'bot', 'content', 'likes', 'reposts')
     search_fields = ('content',)
-    list_filter = ('bot',)  # Filter by bot
-    ordering = ('-post_id',)  # Order by post_id
+    list_filter = ('bot',)
+    ordering = ('-post_id',)
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('post', 'content', 'likes', 'reposts')
     search_fields = ('content',)
-    list_filter = ('post',)  # Filter by post
-    ordering = ('-post',)  # Order by post
+    list_filter = ('post',)
+    ordering = ('-post',)
 
-# Register the models with their respective admin classes
 admin.site.register(Creator, CreatorAdmin)
 admin.site.register(Bot, BotAdmin)
 admin.site.register(Post, PostAdmin)
