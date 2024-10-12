@@ -119,6 +119,8 @@ def get_posts(request):
 def get_x_posts(request):
     '''
     Get x post random posts
+    Parameters:
+    num_posts (int): The number of posts to get
     '''
     data = request.data
     x = data['num_posts']
@@ -134,4 +136,5 @@ def get_x_posts(request):
             "reposts": post.reposts
         })
     return JsonResponse(data, safe=False)
+
 
