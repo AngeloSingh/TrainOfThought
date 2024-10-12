@@ -158,7 +158,26 @@
                     reposts: num_retweets,
                 }),
             });
-            console.log(response);
+            
+            //
+            
+            response.then(res => res.json()).then(data => {
+                if (data.message === 'success') {
+                    const posts = data.posts;
+                    let delay = 0;
+                    posts.forEach(post => {
+                        setTimeout(() => {
+                            const newPost = createPost(post.bot, defaultProfilePicUrl, post.content);
+                            feed.prepend(newPost);
+                        }, delay);
+                        delay += 1000; // 1 second delay between each post
+                    });
+                } else {
+                    console.error('Failed to create post');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
 
             return postDiv;
         }

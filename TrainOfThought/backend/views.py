@@ -79,7 +79,8 @@ def create_post(request):
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
 
-    return JsonResponse({"success": "Post created successfully", }, safe=False)
+    # return the posts alongside the success message
+    return JsonResponse({"message": 'success', "posts": posts}, safe=False)
 
 #update likes or reposts
 @api_view(["PUT"])
