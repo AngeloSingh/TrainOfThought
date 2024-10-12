@@ -31,8 +31,12 @@ def create_static_records():
     popularity = 0,
     networth = 0,)
 
-    for creator_data in data[CREATORS_KEY]:
-        Creator.objects.create(**creator_data)
+    for index, creator_data in enumerate(data[CREATORS_KEY]):
+        Creator.objects.create(id = (index+2) , **creator_data)
+
+
+    for index, creator_data in enumerate(data[CREATORS_KEY]):
+        Bot.objects.create(id = (index+2) , name = creator_data['first_name'] + " " + creator_data['last_name'] , reputation = creator_data['default_reputation'] , hatred = creator_data['default_hatred'] , likeness = creator_data['default_popularity'] , popularity = 0 , networth = creator_data['networth'])
 
 
 def get_created_records():
