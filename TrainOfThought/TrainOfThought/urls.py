@@ -21,6 +21,6 @@ from backend import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
-    path('gpt-post', views.gpt_post, name='gpt-post'),
+    path('gpt-post/', views.gpt_post, name='gpt-post'),
     path('create_post/', views.create_post, name='tick_data'),
 ]

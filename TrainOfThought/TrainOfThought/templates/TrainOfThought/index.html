@@ -128,8 +128,45 @@
             <button type="submit">Tweet</button>
         </form>
     </div>
+    <button type="test(Can delete or move)" onclick="createPost()">test</button>
 
     <script>
+
+        function createPost() {
+            /*
+            url: http://127.0.0.1:8000/create_post
+            post request
+            body: {
+                    "bot":0,
+                    "content":"hello",
+                    "image":"",
+                    "likes":0,
+                    "reposts":0
+                },
+            */
+            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            console.log("Creating post...");
+            //make http post request rest
+            const response =  fetch('http://127.0.0.1:8000/create_post/'
+            ,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    bot: 0,
+                    content: document.getElementById('postContent').value,
+                    image: document.getElementById('profilePicFile').value,
+                    likes: 0,
+                    reposts: 0
+                }),
+            });
+            console.log(response);
+
+        }
+
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
         const postContentInput = document.getElementById('postContent');

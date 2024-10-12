@@ -4,10 +4,14 @@ from django.http import JsonResponse
 from .models import Bot, Post
 from django.shortcuts import render
 from TrainOfThought.scripts.ai import gpt_post_response
+from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_protect
 
 def index(request):
     return render(request, "TrainOfThought/index.html")
 
+@api_view(["POST"])
+@csrf_protect
 def gpt_post(request):
     if request.method == 'POST':
         post = request.POST['user_input']
@@ -18,12 +22,21 @@ def gpt_post(request):
     else:
         return render(request, "TrainOfThought/gpt-post.html")
 
-def create_post(request):
-    # TODO: Gets user post and sends to database
-    #get request data
+@api_view(["POST"])
+@csrf_protect
 
-    post_data = request.POST
-    
+def create_post(request):
+    '''
+    Create a new post
+
+    Parameters:
+    bot (int): The bot that created the post
+    content (str): The content of the post
+    image (str): The image of the post
+    likes (int): The number of likes the post has
+    reposts (int): The number of reposts the post has
+    '''
+    post_data = request.data
     
     try:
         bot = Bot.objects.get(id=post_data['bot'])
