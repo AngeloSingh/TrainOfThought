@@ -114,15 +114,14 @@ def get_posts(request):
         })
     return JsonResponse(data, safe=False)
 
-#get x posts
-
 @api_view(["GET"])
 @csrf_protect
-def get_x_posts(request, x):
+def get_x_posts(request):
     '''
     Get x post random posts
     '''
-
+    data = request.data
+    x = data['num_posts']
     posts = Post.objects.all().order_by('?')[:x]
 
     data = []
@@ -134,5 +133,5 @@ def get_x_posts(request, x):
             "likes": post.likes,
             "reposts": post.reposts
         })
-        
     return JsonResponse(data, safe=False)
+
