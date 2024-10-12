@@ -18,17 +18,25 @@ def create_static_records():
         Creator.objects.create(**creator_data)
 
 
+def create_user_bot():
+    Bot.objects.create(id = 0, name="User", reputation=0, hatred=0, likeness=0, popularity=0, networth=0)
+
 
 def get_created_records():
 
     creators = Creator.objects.all()
+    bots = Bot.objects.all()
 
     print("\nCreators:")
     for creator in creators:
         print(f"ID: {creator.id}, Name: {creator.first_name} {creator.last_name}, Net Worth: {creator.networth}")
 
+    print("\nBots:")
+    for bot in bots:
+        print(f"ID: {bot.id}, Name: {bot.name}, Net Worth: {bot.networth}")
 
 
 if __name__ == "__main__":
     create_static_records()
+    create_user_bot()
     get_created_records()
