@@ -126,7 +126,6 @@
             response.then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Redirect to the URL provided in the response
                     window.location.href = data.redirect_url;
                 } else {
                     alert(data.message);
