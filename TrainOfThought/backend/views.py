@@ -30,7 +30,6 @@ def gpt_post(request):
 
 @api_view(["POST"])
 @csrf_protect
-
 def create_post(request):
     '''
     Create a new post
@@ -53,7 +52,7 @@ def create_post(request):
     data = {
         "bot": bot,
         "content": post_data['content'],
-        "image": post_data['image'],
+        #"image": post_data['image'],
         "likes": post_data['likes'],
         "reposts": post_data['reposts']
     }
@@ -66,29 +65,37 @@ def create_post(request):
       
     if bot.id == 0:
         posts = gpt_post_response(post_data['content'], bot.name)
-        for post in posts:
+        created_posts = []
+        for post_content in posts[1]:
             data = {
                 "bot": bot,
-                "content": post,
-                "image": post_data['image'],
+                "content": post_content[0],
+                #"image": post_data['image'],
                 "likes": post_data['likes'],
                 "reposts": post_data['reposts']
             }
             try:
                 post = Post.objects.create(**data)
                 post.save()
+                created_posts.append({
+                    "id": post.id,
+                    "bot": post.bot.id,
+                    "content": post.content,
+                    #"image": post.image,
+                    "likes": post.likes,
+                    "reposts": post.reposts,
+                    "name": post.bot.name
+                })
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
 
-    # return the posts alongside the success message
-    return JsonResponse({"message": 'success', "posts": posts}, safe=False)
+        return JsonResponse({"message": 'success', "posts": created_posts}, safe=False)
 
+    return JsonResponse({"message": "success"}, safe=False)
 
 def homepage(request):
     creators = Creator.objects.all()
     return render(request, 'TrainOfThought/homepage.html', {'creators': creators})
-
-
 
 @api_view(["POST"])
 @csrf_protect
@@ -189,11 +196,9 @@ def get_x_posts(request):
     for post in posts:
         data.append({
             "id": post.id,
-            "bot": post.bot.id,
+            "bot": post.bot_id,
             "content": post.content,
             "likes": post.likes,
             "reposts": post.reposts
         })
     return JsonResponse(data, safe=False)
-
-

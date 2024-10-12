@@ -39,10 +39,7 @@ def gpt_post_response(post, person="a random celebrity"):
         score = None
         comments = []
 
-    print(f"Score: {score}")
-    print(f"Comments: {comments}")
-
-    return((score, comments))
+    return([score, comments])
 
 def gpt_bot_comments(name, number):
     # Load environment variables from .env file
@@ -115,14 +112,15 @@ def main():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT name, reputation, likeness FROM backend_bot WHERE id = 1")
-    bot_info = cursor.fetchone()
+    #cursor.execute("SELECT name, reputation, likeness FROM backend_bot WHERE id = 1")
+    #bot_info = cursor.fetchone()
+    bot_info = True
 
     if bot_info:
         bot = {
-            "name": bot_info[0],
-            "reputation": bot_info[1],
-            "likeness": bot_info[2]
+            "name": "Ryan Reynolds",
+            "reputation": 0,
+            "likeness": 0
         }
 
         # Generate tweets for the bot
