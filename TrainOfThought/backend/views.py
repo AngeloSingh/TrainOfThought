@@ -1,26 +1,25 @@
 from django.http import JsonResponse
 from .models import Bot, Post
-from django.http import JsonResponse
-from .models import Bot, Post
 from django.shortcuts import render
 from TrainOfThought.scripts.ai import gpt_post_response
 from rest_framework.decorators import api_view
-from django.views.decorators.csrf import csrf_protect
+from rest_framework.response import Response
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
 def index(request):
     return render(request, "TrainOfThought/index.html")
 
-@api_view(["POST"])
-@csrf_protect
+@api_view(["GET", "POST"])
+@ensure_csrf_cookie
 def gpt_post(request):
     if request.method == 'POST':
-        post = request.POST['user_input']
-        person = request.POST['person']
+        post = request.data.get('user_input')
+        person = request.data.get('person')
         response = gpt_post_response(post, person)
-        #response = "This is a placeholder response"
-        return render(request, "TrainOfThought/gpt-post.html", {'response': response})
+        return Response({'response': response})
     else:
         return render(request, "TrainOfThought/gpt-post.html")
+
 
 @api_view(["POST"])
 @csrf_protect
