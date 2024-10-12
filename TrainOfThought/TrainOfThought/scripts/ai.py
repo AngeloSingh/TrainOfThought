@@ -68,3 +68,28 @@ def gpt_bot_comments(name, number):
     print(tweets)
     
     return tweets
+
+# Ask chatgpt to general 100 random twitter posts (under 75 characters each)
+def gpt_random_tweets(person):
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Get the API key from the environment variable
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # Initialize the OpenAI client with the API key
+    client = OpenAI(api_key=api_key)
+
+    completion = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": f"You are a user of a social media site like twitter, specifically the celebrity {person}, please randomly create 100 tweets on any random topics (each can be different), though be aggressive and dumb like an actual twitter user, sharing 'hot takes', etc. Be below 75 characters in each tweet, and return them as an array of strings."}
+    ]
+    )
+
+    # Parse the message content to get the array of strings
+    tweets = completion.choices[0].message.content.strip().split('\n')
+
+    print(tweets)
+
+    return tweets
