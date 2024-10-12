@@ -18,6 +18,18 @@
             padding: 20px;
             z-index: 1000;
         }
+        .right-fixed {
+            position: fixed;
+            top: 50px;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            border-left: 2px solid #ccc;
+            padding: 20px;
+            z-index: 1000;
+        }
+
         .stat-label {
             font-weight: bold;
             margin-bottom: 5px;
@@ -65,10 +77,13 @@
                 </li>
             </ul>
         </div>
-
-        <div class="feed" id="feed">
-            <!-- Posts will be added here -->
-        </div><br />
+        <div class="right-fixed">
+            <h4>Top Trends</h4>
+            <div class="feed" id="feed">
+                <!-- Posts will be added here -->
+            </div><br />
+        </div>
+        
         <form class="new-post-form" id="newPostForm">
             <input type="text" id="postUsername" placeholder="What's your username?" required>
             <input type="file" id="profilePicFile">
@@ -358,7 +373,7 @@
         }
 
         // Start fetching posts when the page loads
-        //window.onload = startFetchingPosts;
+        window.onload = startFetchingPosts;
     </script>
 </body>
 </html>
