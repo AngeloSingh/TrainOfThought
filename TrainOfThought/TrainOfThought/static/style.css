@@ -62,6 +62,10 @@ body {
 .post .content-section {
     margin-left: 10px;
     flex: 1;
+    word-wrap: break-word; /* Ensures text breaks if it's too long */
+    white-space: pre-wrap; /* Preserves new lines and spaces */
+    max-height: 200px; /* Set a max height for the post content */
+    overflow-y: auto; 
 }
 
 .post .content {
