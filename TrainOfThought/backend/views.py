@@ -114,7 +114,7 @@ def get_posts(request):
         })
     return JsonResponse(data, safe=False)
 
-@api_view(["GET"])
+@api_view(["POST"])
 @csrf_protect
 def get_x_posts(request):
     '''

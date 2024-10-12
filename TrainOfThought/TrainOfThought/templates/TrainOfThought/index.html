@@ -173,24 +173,55 @@
             let profilePicUrl = defaultProfilePicUrl; // Start with the default profile picture
 
             if (profilePicFile) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    profilePicUrl = event.target.result; // Get the uploaded image as a data URL
-                    const newPost = createPost(username, profilePicUrl, content);
-                    // Add new post to the top of the feed
-                    feed.prepend(newPost);
-                    // Clear input fields
-                    postContentInput.value = '';
-                };
-                reader.readAsDataURL(profilePicFile); // Read the uploaded file as a data URL
-            } else {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                profilePicUrl = event.target.result; // Get the uploaded image as a data URL
                 const newPost = createPost(username, profilePicUrl, content);
                 // Add new post to the top of the feed
                 feed.prepend(newPost);
                 // Clear input fields
                 postContentInput.value = '';
+            };
+            reader.readAsDataURL(profilePicFile); // Read the uploaded file as a data URL
+            } else {
+            const newPost = createPost(username, profilePicUrl, content);
+            // Add new post to the top of the feed
+            feed.prepend(newPost);
+            // Clear input fields
+            postContentInput.value = '';
             }
         });
+
+        // Function to fetch new posts from the backend
+        async function fetchNewPosts() {
+            const numPosts = Math.floor(Math.random() * 10) + 1; // Random number between 1 and 10
+            const response = await fetch('http://127.0.0.1:8000/get_x_posts/', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector("[name=csrfmiddlewaretoken]").value
+            },
+            body: JSON.stringify({ num_posts: numPosts })
+            });
+
+            if (response.ok) {
+            const posts = await response.json();
+            posts.forEach(post => {
+            const newPost = createPost(post.bot, defaultProfilePicUrl, post.content);
+            feed.appendChild(newPost);
+            });
+            } else {
+            console.error('Failed to fetch new posts');
+            }
+        }
+
+        // Function to periodically fetch new posts
+        function startFetchingPosts() {
+            setInterval(fetchNewPosts, Math.floor(Math.random() * 5000) + 1000); // Random interval between 1 and 5 seconds
+        }
+
+        // Start fetching posts when the page loads
+        window.onload = startFetchingPosts;
     </script>
 </body>
 </html>
