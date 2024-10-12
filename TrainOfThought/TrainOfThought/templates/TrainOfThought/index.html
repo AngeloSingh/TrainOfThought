@@ -20,44 +20,8 @@
             <button type="submit">Tweet</button>
         </form>
     </div>
-    <button type="test(Can delete or move)" onclick="createPost2()">test</button>
 
     <script>
-
-        function createPost2() {
-            /*
-            url: http://127.0.0.1:8000/create_post
-            post request
-            body: {
-                    "bot":0,
-                    "content":"hello",
-                    "image":"",
-                    "likes":0,
-                    "reposts":0
-                },
-            */
-            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-            console.log("Creating post...");
-            //make http post request rest
-            const response =  fetch('http://127.0.0.1:8000/create_post/'
-            ,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrf_token
-                },
-                body: JSON.stringify({
-                    bot: 0,
-                    content: document.getElementById('postContent').value,
-                    image: document.getElementById('profilePicFile').value,
-                    likes: 0,
-                    reposts: 0
-                }),
-            });
-            console.log(response);
-
-        }
 
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
@@ -96,49 +60,105 @@
             const currentDate = new Date();
             timestampDiv.textContent = `Posted on ${currentDate.toLocaleString()}`;
 
-            // Like section
-            const likeSection = document.createElement('div');
-            likeSection.classList.add('like-section');
+            const likeRetweetSection = document.createElement('div');
+            likeRetweetSection.classList.add('like-retweet-section');
 
+            // Like button
             const likeButton = document.createElement('img');
             likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png'; // Default heart icon
             likeButton.classList.add('like-button');
             likeButton.alt = 'Like';
 
+            // Like count
             const likeCount = document.createElement('span');
             likeCount.classList.add('like-count');
             likeCount.textContent = '0'; // Initial like count
 
+            // Retweet button
+            const retwButton = document.createElement('img');
+            retwButton.src = 'https://cdn-icons-png.flaticon.com/512/126/126498.png'; // Default retweet icon
+            retwButton.classList.add('retw-button');
+            retwButton.alt = 'Retweet';
+
+            // Retweet count
+            const retwCount = document.createElement('span');
+            retwCount.classList.add('retw-count');
+            retwCount.textContent = '0'; // Initial retweet count
+
             let liked = false; // Flag to track if the post is liked or not
+            let retweeted = false;
 
             // Event listener to handle like/unlike functionality
             likeButton.addEventListener('click', function () {
                 let count = parseInt(likeCount.textContent, 10);
 
-                if (liked) {
-                    likeCount.textContent = count - 1; // Unlike, decrease count
-                    likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png'; // Unliked heart icon
-                } else {
+                if (!liked) {
+                    liked = true;
                     likeCount.textContent = count + 1; // Like, increase count 
                     likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; // Liked heart icon (filled)
                 }
-
-                liked = !liked; // Toggle the liked state
             });
 
-            // Append like button and count to like section
-            likeSection.appendChild(likeButton);
-            likeSection.appendChild(likeCount);
+            retwButton.addEventListener('click', function () {
+                let count = parseInt(retwCount.textContent, 10);
+
+                if (!retweeted) {
+                    retweeted = true;
+                    retwCount.textContent = count + 1;
+                }
+            })
+
+            likeRetweetSection.appendChild(likeButton);
+            likeRetweetSection.appendChild(likeCount);
+            likeRetweetSection.appendChild(retwButton);
+            likeRetweetSection.appendChild(retwCount);
+
 
             // Append username, content, timestamp, and like section to content section
             contentSection.appendChild(userDiv);
             contentSection.appendChild(contentDiv);
             contentSection.appendChild(timestampDiv);
-            contentSection.appendChild(likeSection);
+            // Append the like/retweet section to the content section
+            contentSection.appendChild(likeRetweetSection);
 
             // Append profile picture and content section to post
             postDiv.appendChild(profilePic);
             postDiv.appendChild(contentSection);
+
+            /*
+            url: http://127.0.0.1:8000/create_post
+            post request
+            body: {
+                    "bot":0,
+                    "content":"hello",
+                    "image":"",
+                    "likes":0,
+                    "reposts":0
+                },
+            */
+
+            let num_likes = 0;
+            let num_retweets = 0;
+            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            console.log("Creating post...");
+            //make http post request rest
+            const response =  fetch('http://127.0.0.1:8000/create_post/'
+            ,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    bot: 0,
+                    content: document.getElementById('postContent').value,
+                    image: document.getElementById('profilePicFile').value,
+                    likes: num_likes,
+                    reposts: num_retweets,
+                }),
+            });
+            console.log(response);
 
             return postDiv;
         }
