@@ -25,4 +25,5 @@ urlpatterns = [
     path('create_post/', views.create_post, name='tick_data'),
     path('get_posts/', views.get_posts, name='get_posts'),
     path('update_post/<int:post_id>/', views.update_post, name='update_post'),
+    path('get_x_posts/', views.get_x_posts, name='get_x_posts'),
 ]
