@@ -22,5 +22,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('gpt-post', views.gpt_post, name='gpt-post'),
-    path('tick_posts/', views.tick_posts, name='tick_data'),
+    path('create_post/', views.create_post, name='tick_data'),
 ]
