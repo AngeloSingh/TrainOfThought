@@ -29,5 +29,6 @@ urlpatterns = [
     path('select_creator/', views.select_creator, name='select_creator'),
     path('get_posts/', views.get_posts, name='get_posts'),
     path('update_post/<int:post_id>/', views.update_post, name='update_post'),
-    path('get_x_posts/', views.get_x_posts, name='get_x_posts')
+    path('get_x_posts/', views.get_x_posts, name='get_x_posts'),
+    path('get_metrics/' , views.get_metrics , name='get_metrics'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -23,6 +23,7 @@ class Bot(models.Model):
     likeness = models.FloatField()
     popularity = models.FloatField()
     networth = models.DecimalField(max_digits=15, decimal_places=2)
+    creator_id = models.ForeignKey(Creator, on_delete=models.CASCADE , null=True)
 
     def __str__(self):
         return self.name
