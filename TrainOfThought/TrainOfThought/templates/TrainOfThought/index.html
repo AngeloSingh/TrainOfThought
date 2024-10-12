@@ -22,7 +22,25 @@
     </div>
     <button type="test(Can delete or move)" onclick="createPost2()">test</button>
 
+    <div id="data-container"></div>
+
     <script>
+        function fetchData() {
+            $.ajax({
+                url: "{% url 'get_posts' %}",
+                method: "GET",
+                success: function(data) {
+                    // Update your frontend with the new data
+                    data.forEach(item => {
+                        $('#data-container').append('<div>' + item.id + '</div>'); // Change field_name to your model field
+                    });
+                }
+            });
+        }
+
+        // Call fetchData initially and then set interval
+        fetchData();
+        setInterval(fetchData, 5000); // Refresh every 5 seconds
 
         function createPost2() {
             /*
