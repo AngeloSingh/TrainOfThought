@@ -116,13 +116,13 @@ def select_creator(request):
 
             my_bot.save()
 
-            return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/', 'success': True})
+            return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/index', 'success': True})
 
         except Creator.DoesNotExist:
             return JsonResponse({'message': 'Creator not found', 'success': False})
 
 
-    return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/', 'success': False})
+    return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/index', 'success': False})
 
 
 #update likes or reposts
