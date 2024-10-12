@@ -22,4 +22,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('tick_posts/', views.tick_posts, name='tick_data'),
+    path('post_post/', views.create_post, name='create_post'),
 ]
