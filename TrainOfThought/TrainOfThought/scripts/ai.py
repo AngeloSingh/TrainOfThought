@@ -1,7 +1,16 @@
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
 def gpt_post_response(post, person="a random celebrity"):
-    client = OpenAI()
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Get the API key from the environment variable
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # Initialize the OpenAI client with the API key
+    client = OpenAI(api_key=api_key)
     # Make a call to chat gpt-4o-mini with the post
 
     completion = client.chat.completions.create(
@@ -35,8 +44,14 @@ def gpt_post_response(post, person="a random celebrity"):
     return((score, comments))
 
 def gpt_bot_comments(name, number):
-    client = OpenAI()
-    # Make a call to chat gpt-4o-mini with the post
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Get the API key from the environment variable
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # Initialize the OpenAI client with the API key
+    client = OpenAI(api_key=api_key)
 
     completion = client.chat.completions.create(
     model="gpt-4o-mini",
