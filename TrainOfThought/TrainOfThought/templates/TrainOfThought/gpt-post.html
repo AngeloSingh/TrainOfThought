@@ -20,6 +20,9 @@
     <p id="status"></p>
     <p id="response"></p>
 
+    <p>Likes: <span id="likes">{{ likes }}</span></p>
+    <p>Shares: <span id="shares">{{ shares }}</span></p>
+
     <script>
         document.getElementById('gptForm').addEventListener('submit', async function(event) {
             event.preventDefault();

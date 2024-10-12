@@ -26,8 +26,6 @@ def gpt_post_response(post, person="a random celebrity"):
 
     response_content = completion.choices[0].message.content
 
-    print(response_content)
-
     try:
         response_array = eval(response_content)
         score = response_array[0]
