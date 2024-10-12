@@ -1,11 +1,12 @@
 from django.http import JsonResponse
-from .models import Bot, Post
+from .models import Bot, Post, Creator
 from django.shortcuts import render
 from TrainOfThought.scripts.ai import gpt_post_response
 from TrainOfThought.scripts.update_vars import update_attributes, get_bot_attributes
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+
 
 def index(request):
     return render(request, "TrainOfThought/index.html")
@@ -17,6 +18,7 @@ def gpt_post(request):
         post = request.data.get('user_input')
         person = request.data.get('person')
         response = gpt_post_response(post, person)
+
         print(response)
         likes, reposts = update_attributes(0, response[0], 0.5)
         print (likes, reposts)
@@ -41,12 +43,12 @@ def create_post(request):
     reposts (int): The number of reposts the post has
     '''
     post_data = request.data
-    
+
     try:
         bot = Bot.objects.get(id=post_data['bot'])
     except Bot.DoesNotExist:
         return JsonResponse({"error": "Bot does not exist"}, status=404)
-    
+
 
     data = {
         "bot": bot,
@@ -60,9 +62,8 @@ def create_post(request):
         post = Post.objects.create(**data)
         post.save()
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
-    
-
+        return JsonResponse({"error": str(e)}, status=400) 
+      
     if bot.id == 0:
         posts = gpt_post_response(post_data['content'], bot.name)
         for post in posts:
@@ -81,6 +82,46 @@ def create_post(request):
 
     # return the posts alongside the success message
     return JsonResponse({"message": 'success', "posts": posts}, safe=False)
+
+
+def homepage(request):
+    creators = Creator.objects.all()
+    return render(request, 'TrainOfThought/homepage.html', {'creators': creators})
+
+
+
+@api_view(["POST"])
+@csrf_protect
+def select_creator(request):
+    if request.method == 'POST':
+        id = request.data['creatorId']
+
+        try:
+            bot = Bot.objects.get(id=id)
+
+            posts_to_delete = Post.objects.filter(bot=bot)
+            posts_to_delete.delete()
+
+
+            creator = Creator.objects.get(id=id)
+
+
+            my_bot = Bot.objects.get(id=0)
+            my_bot.reputation = creator.default_reputation
+            my_bot.hatred = creator.default_hatred
+            my_bot.popularity = creator.default_popularity
+            my_bot.networth = creator.networth
+
+            my_bot.save()
+
+            return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/', 'success': True})
+
+        except Creator.DoesNotExist:
+            return JsonResponse({'message': 'Creator not found', 'success': False})
+
+
+    return JsonResponse({'message': 'Creator selected successfully', 'redirect_url': '/', 'success': False})
+
 
 #update likes or reposts
 @api_view(["PUT"])

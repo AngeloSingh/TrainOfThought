@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pick Your Creator.</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .grid-container {
+            margin-top: 20px;
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 10px 0;
+        }
+        .grid-item {
+            flex: 0 0 auto;
+            width: 300px;
+            margin-right: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            background-color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .grid-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .grid-item.selected {
+            border: 2px solid #007bff;
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .no-image {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <div class="container">
+        <h1 class="text-center my-4">Creators</h1>
+        <div class="grid-container">
+            {% for creator in creators %}
+            <div class="grid-item p-4 m-2" data-id = "{{ creator.id }}"data-creator-id="{{ creator.first_name }} {{ creator.last_name}}">
+                {% if creator.image %}
+                    <img src="{{ creator.image.url }}" alt="{{ creator.first_name }} {{ creator.last_name }}">
+                {% else %}
+                    <div class="no-image">No Image Available</div>
+                {% endif %}
+                <h2 class="mt-2 text-wrap">{{ creator.first_name }} {{ creator.last_name }}</h2>
+                <p class="text-wrap">{{ creator.description }}</p>
+                <p><strong>Reputation:</strong> {{ creator.default_reputation }}</p>
+                <p><strong>Hatred:</strong> {{ creator.default_hatred }}</p>
+                <p><strong>Popularity:</strong> {{ creator.default_popularity }}</p>
+                <p><strong>Net Worth:</strong> ${{ creator.networth }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="selected-creator-info" style="display: none;" class="mt-4 text-large text-center">Selected : </div>
+        <div class="d-flex justify-content-center">
+            <button id="login-btn" type="button" style="display: none;" class="btn btn-primary p-2" onclick="selectCreator()">Login</button>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+
+
+        selected_id= null;
+        document.querySelectorAll('.grid-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                const creatorId = this.getAttribute('data-creator-id');
+                const creator = this.getAttribute('data-id');
+
+                selected_id = creator;
+                let title = document.getElementById('selected-creator-info')
+                title.innerHTML = `Selected : ${creatorId}`;
+                title.style.display = 'block';
+                document.getElementById('login-btn').style.display = 'block';
+            });
+        });
+
+
+
+        function selectCreator() {
+
+            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            console.log("Creating post...");
+            console.log(selected_id)
+            //make http post request rest
+            const response =  fetch('http://127.0.0.1:8000/select_creator/'
+            ,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    creatorId : selected_id
+                }),
+            });
+
+            response.then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+        }
+    </script>
+</body>
+</html>
