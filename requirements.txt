@@ -22,3 +22,4 @@ tqdm==4.66.5
 typing_extensions==4.12.2
 tzdata==2024.2
 wheel==0.44.0
+python-dotenv==1.0.1
