@@ -12,7 +12,6 @@ def gpt_post(request):
         post = request.POST['user_input']
         person = request.POST['person']
         response = gpt_post_response(post, person)
-        #response = "This is a placeholder response"
         return render(request, "TrainOfThought/gpt-post.html", {'response': response})
     else:
         return render(request, "TrainOfThought/gpt-post.html")
