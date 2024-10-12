@@ -6,7 +6,7 @@
     <title>GPT Post</title>
 </head>
 <body>
-    <form method="post" action="{% url 'gpt-post' %}">
+    <form id="gptForm">
         {% csrf_token %}
         <label for="user_input">Enter your text:</label>
         <input type="text" id="user_input" name="user_input" required>
@@ -17,8 +17,39 @@
         <button type="submit">Submit</button>
     </form>
 
-    {% if response %}
-        <p>{{ response }}</p>
-    {% endif %}
+    <p id="status"></p>
+    <p id="response"></p>
+
+    <script>
+        document.getElementById('gptForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            document.getElementById('status').innerText = 'Generating...';
+            document.getElementById('response').innerText = '';
+
+            const userInput = document.getElementById('user_input').value;
+            const person = document.getElementById('person').value;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            const response = await fetch("{% url 'gpt-post' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    user_input: userInput,
+                    person: person
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById('status').innerText = '';
+            if (data.response) {
+                document.getElementById('response').innerText = data.response;
+            } else {
+                document.getElementById('response').innerText = 'Error: ' + (data.error || 'Unknown error');
+            }
+        });
+    </script>
 </body>
 </html>

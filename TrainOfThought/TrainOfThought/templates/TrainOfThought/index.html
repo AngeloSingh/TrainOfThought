@@ -8,7 +8,7 @@
     <title>Twitter-Like Feed</title>
 </head>
 <body>
-
+    {% csrf_token %}
     <div class="container">
         <div class="feed" id="feed">
             <!-- Posts will be added here -->
@@ -20,11 +20,11 @@
             <button type="submit">Tweet</button>
         </form>
     </div>
-    <button type="test(Can delete or move)" onclick="createPost()">test</button>
+    <button type="test(Can delete or move)" onclick="createPost2()">test</button>
 
     <script>
 
-        function createPost() {
+        function createPost2() {
             /*
             url: http://127.0.0.1:8000/create_post
             post request
@@ -172,6 +172,5 @@
             }
         });
     </script>
-
 </body>
 </html>
