@@ -169,7 +169,7 @@
             likeSection.classList.add('like-section');
 
             const likeButton = document.createElement('img');
-            likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; // Heart icon URL
+            likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png'; // Default heart icon
             likeButton.classList.add('like-button');
             likeButton.alt = 'Like';
 
@@ -177,12 +177,21 @@
             likeCount.classList.add('like-count');
             likeCount.textContent = '0'; // Initial like count
 
-            // Event listener to handle like functionality
+            let liked = false; // Flag to track if the post is liked or not
+
+            // Event listener to handle like/unlike functionality
             likeButton.addEventListener('click', function () {
                 let count = parseInt(likeCount.textContent, 10);
-                likeCount.textContent = count + 1; // Increment like count
-                likeButton.style.cursor = 'default'; // Change cursor to default
-                likeButton.removeEventListener('click', arguments.callee); // Disable further clicks
+
+                if (liked) {
+                    likeCount.textContent = count - 1; // Unlike, decrease count
+                    likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png'; // Unliked heart icon
+                } else {
+                    likeCount.textContent = count + 1; // Like, increase count 
+                    likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; // Liked heart icon (filled)
+                }
+
+                liked = !liked; // Toggle the liked state
             });
 
             // Append like button and count to like section
