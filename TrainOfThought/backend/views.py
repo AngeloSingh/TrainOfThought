@@ -6,6 +6,7 @@ from TrainOfThought.scripts.update_vars import update_attributes, get_bot_attrib
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.core import serializers
 
 
 def index(request):
@@ -62,8 +63,8 @@ def create_post(request):
         post = Post.objects.create(**data)
         post.save()
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400) 
-      
+        return JsonResponse({"error": str(e)}, status=400)
+
     if bot.id == 0:
         posts = gpt_post_response(post_data['content'], bot.name)
         for post in posts:
@@ -111,6 +112,7 @@ def select_creator(request):
             my_bot.hatred = creator.default_hatred
             my_bot.popularity = creator.default_popularity
             my_bot.networth = creator.networth
+            my_bot.creator_id = creator
 
             my_bot.save()
 
@@ -125,7 +127,7 @@ def select_creator(request):
 
 #update likes or reposts
 @api_view(["PUT"])
-@csrf_protect   
+@csrf_protect
 def update_post(request, post_id):
     '''
     Update a post
@@ -140,7 +142,7 @@ def update_post(request, post_id):
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post does not exist"}, status=404)
-    
+
     post.likes = post_data['likes']
     post.reposts = post_data['reposts']
 
@@ -148,7 +150,7 @@ def update_post(request, post_id):
         post.save()
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
-    
+
     return JsonResponse({"success": "Post updated successfully"}, safe=False)
 
 #get posts
@@ -196,4 +198,36 @@ def get_x_posts(request):
         })
     return JsonResponse(data, safe=False)
 
+
+@api_view(["GET"])
+def get_metrics(request):
+    '''
+    Get the metrics of the bot
+
+    Returns:
+    dict: A dictionary of the bot metrics
+    '''
+
+
+    data = {
+        "reputation": 0,
+        "hatred": 0,
+        "popularity": 0,
+        "networth": 0
+    }
+
+    try:
+        my_bot = Bot.objects.get(id=0)
+
+        data = {
+        "reputation": my_bot.reputation,
+        "hatred": my_bot.hatred,
+        "popularity": my_bot.popularity,
+        "networth": my_bot.networth
+        }
+
+
+        return JsonResponse({"metrics" : data , "me" : my_bot.creator_id.first_name + " " + my_bot.creator_id.last_name, "image" : my_bot.creator_id.image.url})
+    except Bot.DoesNotExist:
+        return JsonResponse({"metrics" : data})
 
