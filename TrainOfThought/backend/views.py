@@ -62,7 +62,24 @@ def create_post(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
     
-    return JsonResponse({"success": "Post created successfully"}, safe=False)
+
+    if bot.id == 0:
+        posts = gpt_post_response(post_data['content'], bot.name)
+        for post in posts:
+            data = {
+                "bot": bot,
+                "content": post,
+                "image": post_data['image'],
+                "likes": post_data['likes'],
+                "reposts": post_data['reposts']
+            }
+            try:
+                post = Post.objects.create(**data)
+                post.save()
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"success": "Post created successfully", }, safe=False)
 
 #update likes or reposts
 @api_view(["PUT"])

@@ -194,7 +194,7 @@
 
         // Function to fetch new posts from the backend
         async function fetchNewPosts() {
-            const numPosts = Math.floor(Math.random() * 10) + 1; // Random number between 1 and 10
+            const numPosts = Math.floor(Math.random() * 3) + 1; // Random number between 1 and 10
             const response = await fetch('http://127.0.0.1:8000/get_x_posts/', {
             method: 'POST',
             headers: {
@@ -208,7 +208,7 @@
             const posts = await response.json();
             posts.forEach(post => {
             const newPost = createPost(post.bot, defaultProfilePicUrl, post.content);
-            feed.appendChild(newPost);
+            feed.prepend(newPost);
             });
             } else {
             console.error('Failed to fetch new posts');
@@ -217,7 +217,7 @@
 
         // Function to periodically fetch new posts
         function startFetchingPosts() {
-            setInterval(fetchNewPosts, Math.floor(Math.random() * 5000) + 1000); // Random interval between 1 and 5 seconds
+            setInterval(fetchNewPosts, Math.floor(Math.random() * 4000) + 1000); // Random interval between 1 and 5 seconds
         }
 
         // Start fetching posts when the page loads
