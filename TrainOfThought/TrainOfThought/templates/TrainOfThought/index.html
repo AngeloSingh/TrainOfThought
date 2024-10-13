@@ -125,37 +125,37 @@
     {% csrf_token %}
     <div class="container">
         <div class="left-fixed">
-            <img id="profile-picture" src="" alt="Profile Picture Of Chosen Character">
-            <h4 id="character-name" class="d-flex justify-content-center align-items-center"></h4>
+            <img id="profile-picture" src="{{ stats.image }}" alt="Profile Picture Of Chosen Character">
+            <h4 id="character-name" class="d-flex justify-content-center align-items-center">{{ stats.me }}</h4>
             <ul class="list-unstyled">
                 <li>
                     <div class="stat-label">Reputation</div>
                     <div class="progress">
-                        <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: 70%;" aria-valuenow="{{ stats.reputation }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Hatred</div>
                     <div class="progress">
-                        <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: 50%;" aria-valuenow="{{ stats.hatred }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Popularity</div>
                     <div class="progress">
-                        <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: 80%;" aria-valuenow="{{ stats.popularity }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Likeness</div>
                     <div class="progress">
-                        <div class="progress-bar bg-primary" id="likeness" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                        <div class="progress-bar bg-primary" id="likeness" role="progressbar" style="width: 60%;" aria-valuenow="{{ stats.likeness }}" aria-valuemin="0" aria-valuemax="100">60%</div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Net Worth</div>
                     <div class="progress">
-                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="{{ stats.networth }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
             </ul>
@@ -350,6 +350,10 @@
 
         async function createPost(username, profilePicUrl, content) {
             try {
+                // Add temporary post to the feed saying 'refreshing...'
+                const refreshingPost = createPostElement('Refreshing...', defaultProfilePicUrl, 'Fetching new posts...');
+                feed.prepend(refreshingPost);
+
                 const response = await fetch('http://127.0.0.1:8000/create_post/', {
                     method: 'POST',
                     headers: {
@@ -367,6 +371,10 @@
                 });
 
                 const data = await response.json();
+
+                // Remove temporary post
+                feed.removeChild(refreshingPost);
+                
                 if (data.message === 'success') {
                     const newPost = createPostElement(username, profilePicUrl, content);
                     feed.prepend(newPost);
@@ -387,7 +395,7 @@
                     function abbreviateNumber(value) {
                         let newValue = value;
                         if (value >= 1000) {
-                            const suffixes = ["", "k", "M", "B","T"];
+                            const suffixes = ["", "k", "M", "B", "T"];
                             const suffixNum = Math.floor(("" + value).length / 3);
                             let shortValue = '';
                             for (let precision = 2; precision >= 1; precision--) {
@@ -408,10 +416,10 @@
                     document.getElementById('hatred').textContent = stats.hatred + '%';
                     document.getElementById('popularity').style.width = Math.floor(stats.popularity) + '%';
                     document.getElementById('popularity').textContent = Math.floor(stats.popularity) + '%';
-                    document.getElementById('likeness').style.width = Math.floor(stats.likeness) + '%';
-                    document.getElementById('likeness').textContent = Math.floor(stats.likeness) + '%';
+                    document.getElementById('hatred').style.width = Math.floor(stats.hatred) + '%';
+                    document.getElementById('hatred').textContent = Math.floor(stats.hatred) + '%';
                     document.getElementById('networth').style.width = stats.networth + '%';
-                    document.getElementById('networth').textContent = '$' + abbreviateNumber(stats.networth) + 'M';
+                    document.getElementById('networth').textContent = '$' + stats.networth + 'M';
                 } else {
                     console.error('Failed to create post');
                 }

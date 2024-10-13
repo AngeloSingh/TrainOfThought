@@ -10,7 +10,14 @@ from django.core import serializers
 
 
 def index(request):
-    return render(request, "TrainOfThought/index.html")
+    bot = Bot.objects.get(id=0)
+    stats = {
+        "reputation": int(bot.reputation),
+        "hatred": int(bot.hatred),
+        "popularity": int(bot.popularity),
+        "networth": "{:,.0f}".format(bot.networth / 1_000_000)
+    }
+    return render(request, "TrainOfThought/index.html", {'stats': stats})
 
 @api_view(["GET", "POST"])
 @ensure_csrf_cookie
@@ -94,11 +101,11 @@ def create_post(request):
                 return JsonResponse({"error": str(e)}, status=400)
 
         stats.append({
-            "reputation": bot.reputation,
+            "reputation": int(bot.reputation),
             "hatred": bot.hatred,
             "popularity": bot.popularity,
             "likeness": bot.likeness,
-            "networth": bot.networth
+            "networth": "{:,.0f}".format(bot.networth / 1_000_000)
         })
     
         print (stats)
