@@ -115,6 +115,9 @@ def create_post(request):
 
 def homepage(request):
     creators = Creator.objects.all()
+    for creator in creators:
+        # Convert networth to float, divide by a million, and round to nearest integer
+        creator.networth_millions = round(float(creator.networth) / 1_000_000)
     return render(request, 'TrainOfThought/homepage.html', {'creators': creators})
 
 @api_view(["POST"])
