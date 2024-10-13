@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twitter-Like Feed</title>
-   
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -85,7 +85,7 @@
         .bg-danger { background-color: #e0245e; }
         .bg-info { background-color: #1da1f2; }
         .bg-warning { background-color: #ffad1f; }
-        
+
         h4 {
             color: #14171a;
             border-bottom: 1px solid #e6ecf0;
@@ -131,28 +131,34 @@
                 <li>
                     <div class="stat-label">Reputation</div>
                     <div class="progress">
-                        <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">70%</div>
+                        <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Hatred</div>
                     <div class="progress">
-                        <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                        <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Popularity</div>
                     <div class="progress">
-                        <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                        <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
                 <li>
                     <div class="stat-label">Net Worth</div>
                     <div class="progress">
-                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">$90M</div>
+                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
             </ul>
+            <div>
+                <h4> History Of Metric Updates </h4>
+                <ul id="metric-history">
+                    <!-- Metric updates will be added here -->
+                </ul>
+            </div>
         </div>
         <div class="right-fixed">
             <h4>Feed</h4>
@@ -308,9 +314,9 @@
                     reposts: num_retweets,
                 }),
             });
-            
+
             //
-            
+
             response.then(res => res.json()).then(data => {
                 if (data.message === 'success') {
                     const posts = data.posts;
@@ -328,7 +334,7 @@
             }).catch(error => {
                 console.error('Error:', error);
             });
-          
+
             return postDiv;
         }
 
@@ -351,7 +357,7 @@
             } else {
                 submitPost(content, username, profilePicUrl);
             }
-        
+
             // Clear input fields
             postContentInput.value = '';
         });
@@ -373,7 +379,7 @@
                         reposts: 0,
                     }),
                 });
-            
+
                 const data = await response.json();
                 if (data.message === 'success') {
                     const newPost = createPost(username, profilePicUrl, content);
@@ -381,7 +387,6 @@
 
                     if (data.posts && data.posts.length > 0) {
                         let delay = 1000;
-                        // Print out data.posts
                         console.log(data.posts);
                         data.posts.forEach(post => {
                             setTimeout(() => {
@@ -399,7 +404,6 @@
             }
         }
 
-        // Function to fetch new posts from the backend
         async function fetchNewPosts() {
             const numPosts = Math.floor(Math.random() * 3) + 1;
             try {
@@ -411,7 +415,7 @@
                     },
                     body: JSON.stringify({ num_posts: numPosts })
                 });
-            
+
                 if (response.ok) {
                     const posts = await response.json();
                     posts.forEach(post => {
@@ -426,6 +430,30 @@
             }
         }
 
+        function handleMetricChange(initialValue, newValue, metricName) {
+    let change = newValue - initialValue;
+
+
+    if (!isNaN(change) && change !== null && isFinite(change)) {
+
+        let changeElement = document.createElement('li');
+
+
+        changeElement.innerText = metricName + " Change: " + Math.abs(change);
+
+        if (change > 0) {
+            changeElement.style.color = 'green';
+        } else {
+            changeElement.style.color = 'red';
+        }
+
+
+        document.getElementById('metric-history').appendChild(changeElement);
+    } else {
+        console.error("Invalid " + metricName + " change detected:", change);
+    }
+}
+
         async function fetchMetrics() {
             const response =  fetch('http://127.0.0.1:8000/get_metrics/'
             ,{
@@ -435,12 +463,26 @@
                     'X-CSRFToken': document.querySelector("[name=csrfmiddlewaretoken]").value
                 }
             }).then(response => response.json()).then((data) => {
+
+                let initialRep = Number(document.getElementById('reputation').innerText);
+                let initialHatred = Number(document.getElementById('hatred').innerText);
+                let initialPopularity = Number(document.getElementById('popularity').innerText);
+                let initialNetworth = Number(document.getElementById('networth').innerText);
+
                 document.getElementById('character-name').innerText = data.me;
                 document.getElementById('reputation').innerText = "Reputation " + data.metrics.reputation;
                 document.getElementById('hatred').innerText = "Hatred " + data.metrics.hatred;
                 document.getElementById('popularity').innerText = "Popularity " +  data.metrics.popularity;
                 document.getElementById('networth').innerText = "Networth " + data.metrics.networth;
                 document.getElementById('profile-picture').src = data.image;
+
+                let repChanges = document.createElement('li');
+
+                let repChange = initialRep - Number(data.metrics.reputation);
+                handleMetricChange(initialRep, Number(data.metrics.reputation), "Reputation");
+                handleMetricChange(initialHatred, Number(data.metrics.hatred), "Hatred");
+                handleMetricChange(initialPopularity, Number(data.metrics.popularity), "Popularity");
+                handleMetricChange(initialNetworth, Number(data.metrics.networth), "Networth");
             });
         }
         // Function to periodically fetch new posts
