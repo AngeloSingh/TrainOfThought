@@ -29,12 +29,44 @@
             border-radius: 50%;
             margin-bottom: 10px;
         }
+        /* Game Over Box Styling */
+        .game-over-box {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 2px solid #000;
+            padding: 20px;
+            z-index: 9999; /* To ensure it appears above other elements */
+            text-align: center;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-over-message {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .game-over-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .game-over-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     {% csrf_token %}
     <div class="container">
-
+         
+        <div id="container-2">
         <div class="left-fixed">
             <img id="profile-picture" src="{{ stats.image }}" alt="Profile Picture Of Chosen Character">
             <h4 id="character-name" class="d-flex justify-content-center align-items-center">{{ stats.name }}</h4>
@@ -74,6 +106,13 @@
             <input type="text" id="postContent" placeholder="What's happening?" maxlength="100" required>
             <button type="submit">Tweet</button>
         </form>
+    </div> 
+</div>
+
+    <!-- Game Over Box -->
+    <div class="game-over-box" id="gameOverBox">
+        <div class="game-over-message" id="gameOverMessage"></div>
+        <button class="game-over-btn" onclick="location.href='/'">Go to Homepage</button>
     </div>
 
     <script>
@@ -248,12 +287,35 @@
                     document.getElementById('hatred').textContent = Math.floor(stats.hatred) + '%';
                     document.getElementById('networth').style.width = stats.networth + '%';
                     document.getElementById('networth').textContent = '$' + stats.networth + 'M';
+
+                    checkThresholds(Math.floor(stats.popularity), stats.networth);
                 } else {
                     console.error('Failed to create post');
                 }
             } catch (error) {
                 console.error('Error:', error);
             }
+        }
+
+        function checkThresholds(popularity, networth) {
+            if (popularity <= 0) {
+                gameOver(true, false, false);
+            } else if (networth <= 0) {
+                gameOver(false, false, true);
+            }
+        }
+
+        function gameOver(popularity, networth) {
+            let message = 'You lose :(';
+            if (networth) {
+                message = 'Broke boy, you lose';
+            } else if (popularity) {
+                message = 'Hey anyone remember this internet sensation? Nah, loser';
+            }
+            gameOverMessage.textContent = message;
+            gameOverBox.style.display = 'block';  // Show the box 
+
+            document.getElementById("container-2").style.display = "none";
         }
 
         // Function to fetch new posts from the backend
