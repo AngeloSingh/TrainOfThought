@@ -6,77 +6,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twitter-Like Feed</title>
+
     <style>
-         .left-fixed {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fa;
+            margin: 0;
+            padding: 0;
+            color: #14171a;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .left-fixed {
             position: fixed;
-            top: 50px;
+            top: 0;
             left: 0;
             width: 250px;
             height: 100vh;
-            background-color: #f8f9fa;
-            border-right: 2px solid #ccc;
+            background-color: #ffffff;
+            border-right: 1px solid #e6ecf0;
             padding: 20px;
             z-index: 1000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .right-fixed {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: #ffffff;
+            border-left: 1px solid #e6ecf0;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            flex-grow: 1;
+            margin-left: 250px;
+            margin-right: 300px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
         }
         .stat-label {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #657786;
         }
         #profile-picture {
-            max-width: 100%;
-            max-height: 100%;
-            height: auto;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
+            margin-bottom: 15px;
+            border: 3px solid black;
+        }
+        #character-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #14171a;
+        }
+        .progress {
+            height: 20px;
+            background-color: #e6ecf0;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+        .bg-success { background-color: #17bf63; }
+        .bg-danger { background-color: #e0245e; }
+        .bg-info { background-color: #1da1f2; }
+        .bg-warning { background-color: #ffad1f; }
+
+        h4 {
+            color: #14171a;
+            border-bottom: 1px solid #e6ecf0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .new-post-form {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .new-post-form input {
+            width: 100%;
+            padding: 10px;
             margin-bottom: 10px;
+            border: 1px solid #e6ecf0;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .new-post-form button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+        }
+        .new-post-form button:hover {
+            background-color: grey;
         }
     </style>
 </head>
 <body>
     {% csrf_token %}
     <div class="container">
-
         <div class="left-fixed">
             <img id="profile-picture" src="{{ stats.image }}" alt="Profile Picture Of Chosen Character">
             <h4 id="character-name" class="d-flex justify-content-center align-items-center">{{ stats.me }}</h4>
             <ul class="list-unstyled">
-            <li>
-                <div class="stat-label">Reputation</div>
-                <div class="progress">
-                <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: {{ stats.reputation }}%;" aria-valuenow="{{ stats.reputation }}" aria-valuemin="0" aria-valuemax="100">{{ stats.reputation }}%</div>
-                </div>
-            </li>
-            <li>
-                <div class="stat-label">Hatred</div>
-                <div class="progress">
-                <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: {{ stats.hatred }}%;" aria-valuenow="{{ stats.hatred }}" aria-valuemin="0" aria-valuemax="100">{{ stats.hatred }}%</div>
-                </div>
-            </li>
-            <li>
-                <div class="stat-label">Popularity</div>
-                <div class="progress">
-                <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: {{ stats.popularity }}%;" aria-valuenow="{{ stats.popularity }}" aria-valuemin="0" aria-valuemax="100">{{ stats.popularity }}%</div>
-                </div>
-            </li>
-            <li>
+                <li>
+                    <div class="stat-label">Reputation</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" id="reputation" role="progressbar" style="width: 70%;" aria-valuenow="{{ stats.reputation }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="stat-label">Hatred</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" id="hatred" role="progressbar" style="width: 50%;" aria-valuenow="{{ stats.hatred }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="stat-label">Popularity</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" id="popularity" role="progressbar" style="width: 80%;" aria-valuenow="{{ stats.popularity }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="stat-label">Likeness</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" id="likeness" role="progressbar" style="width: 60%;" aria-valuenow="{{ stats.likeness }}" aria-valuemin="0" aria-valuemax="100">60%</div>
+                    </div>
+                </li>
+                <li>
                     <div class="stat-label">Net Worth</div>
                     <div class="progress">
-                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: {{ stats.networth }}%;" aria-valuenow="{{ stats.networth }}" aria-valuemin="0" aria-valuemax="100">${{ stats.networth }}M</div>
+                        <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="{{ stats.networth }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </li>
             </ul>
+            <div>
+                <h4> History Of Metric Updates </h4>
+                <ul id="metric-history">
+                    <!-- Metric updates will be added here -->
+                </ul>
+            </div>
         </div>
-
-        <div class="feed" id="feed">
-            <!-- Posts will be added here -->
-        </div><br />
-        <form class="new-post-form" id="newPostForm">
-            <input type="text" id="postUsername" placeholder="What's your username?" required>
-            <input type="file" id="profilePicFile">
-            <input type="text" id="postContent" placeholder="What's happening?" maxlength="100" required>
-            <button type="submit">Tweet</button>
-        </form>
+        <div class="right-fixed">
+            <h4>Feed</h4>
+            <div class="feed" id="feed">
+                <!-- Posts will be added here -->
+            </div>
+        </div>
+        <div class="main-content">
+            <form class="new-post-form" id="newPostForm">
+                <input type="text" id="postUsername" placeholder="What's your username?" required>
+                <input type="file" id="profilePicFile">
+                <input type="text" id="postContent" placeholder="What's happening?" maxlength="100" required>
+                <button type="submit">Post</button>
+            </form>
+        </div>
     </div>
-
     <script>
         const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
         const feed = document.getElementById('feed');
@@ -173,9 +277,76 @@
         
             postDiv.appendChild(profilePic);
             postDiv.appendChild(contentSection);
-        
+
+            let num_likes = 0;
+            let num_retweets = 0;
+            // const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            console.log("Creating post...");
+            //make http post request rest
+            const response =  fetch('http://127.0.0.1:8000/create_post/'
+            ,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    bot: 0,
+                    content: document.getElementById('postContent').value,
+                    image: document.getElementById('profilePicFile').value,
+                    likes: num_likes,
+                    reposts: num_retweets,
+                }),
+            });
+
+            //
+
+            response.then(res => res.json()).then(data => {
+                if (data.message === 'success') {
+                    const posts = data.posts;
+                    let delay = 0;
+                    posts.forEach(post => {
+                        setTimeout(() => {
+                            const newPost = createPost(post.bot, defaultProfilePicUrl, post.content);
+                            feed.prepend(newPost);
+                        }, delay);
+                        delay += 1000; // 1 second delay between each post
+                    });
+                } else {
+                    console.error('Failed to create post');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+
             return postDiv;
         }
+
+        // Function to handle form submission
+        newPostForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const content = postContentInput.value.trim();
+            const username = postUsernameInput.value.trim();
+            const profilePicFile = profilePicFileInput.files[0];
+
+            let profilePicUrl = defaultProfilePicUrl;
+
+            if (profilePicFile) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    profilePicUrl = event.target.result;
+                    submitPost(content, username, profilePicUrl);
+                };
+                reader.readAsDataURL(profilePicFile);
+            } else {
+                submitPost(content, username, profilePicUrl);
+            }
+
+            // Clear input fields
+            postContentInput.value = '';
+        });
+
 
         async function createPost(username, profilePicUrl, content) {
             try {
@@ -198,7 +369,7 @@
                         reposts: 0,
                     }),
                 });
-            
+
                 const data = await response.json();
 
                 // Remove temporary post
@@ -257,7 +428,6 @@
             }
         }
 
-        // Function to fetch new posts from the backend
         async function fetchNewPosts() {
             const numPosts = Math.floor(Math.random() * 3) + 1;
             try {
@@ -269,7 +439,7 @@
                     },
                     body: JSON.stringify({ num_posts: numPosts })
                 });
-            
+
                 if (response.ok) {
                     const posts = await response.json();
                     posts.forEach(post => {
@@ -284,6 +454,30 @@
             }
         }
 
+        function handleMetricChange(initialValue, newValue, metricName) {
+    let change = newValue - initialValue;
+
+
+    if (!isNaN(change) && change !== null && isFinite(change)) {
+
+        let changeElement = document.createElement('li');
+
+
+        changeElement.innerText = metricName + " Change: " + Math.abs(change);
+
+        if (change > 0) {
+            changeElement.style.color = 'green';
+        } else {
+            changeElement.style.color = 'red';
+        }
+
+
+        document.getElementById('metric-history').appendChild(changeElement);
+    } else {
+        console.error("Invalid " + metricName + " change detected:", change);
+    }
+}
+
         async function fetchMetrics() {
             const response =  fetch('http://127.0.0.1:8000/get_metrics/'
             ,{
@@ -293,12 +487,26 @@
                     'X-CSRFToken': document.querySelector("[name=csrfmiddlewaretoken]").value
                 }
             }).then(response => response.json()).then((data) => {
+
+                let initialRep = Number(document.getElementById('reputation').innerText);
+                let initialHatred = Number(document.getElementById('hatred').innerText);
+                let initialPopularity = Number(document.getElementById('popularity').innerText);
+                let initialNetworth = Number(document.getElementById('networth').innerText);
+
                 document.getElementById('character-name').innerText = data.me;
                 document.getElementById('reputation').innerText = "Reputation " + data.metrics.reputation;
                 document.getElementById('hatred').innerText = "Hatred " + data.metrics.hatred;
                 document.getElementById('popularity').innerText = "Popularity " +  data.metrics.popularity;
                 document.getElementById('networth').innerText = "Networth " + data.metrics.networth;
                 document.getElementById('profile-picture').src = data.image;
+
+                let repChanges = document.createElement('li');
+
+                let repChange = initialRep - Number(data.metrics.reputation);
+                handleMetricChange(initialRep, Number(data.metrics.reputation), "Reputation");
+                handleMetricChange(initialHatred, Number(data.metrics.hatred), "Hatred");
+                handleMetricChange(initialPopularity, Number(data.metrics.popularity), "Popularity");
+                handleMetricChange(initialNetworth, Number(data.metrics.networth), "Networth");
             });
         }
 
@@ -335,7 +543,7 @@
         }
 
         // Start fetching posts when the page loads
-        //window.onload = startFetchingPosts;
+        window.onload = startFetchingPosts;
     </script>
 </body>
 </html>
