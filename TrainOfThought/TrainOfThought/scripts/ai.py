@@ -17,7 +17,7 @@ def gpt_post_response(post, person="a random celebrity"):
     # Make a call to chat gpt-4o-mini with the post
 
     completion = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="gpt-4o-mini-2024-07-18",
     messages=[
         {"role": "system", "content": f"You are a brainrotted, braindead user of a social media site like twitter, please respond to the following post by {person} (take into account general public opinion of this person) in this format: An array of an int score from -100 to 100 of how 'liked' the post is (for controversial posts, it can be strongly either way regardless of the sentiment of the post). This should be gotten from the generated comments, which are a set of three responses to the post, each limited to below 100 characters each, and in the style of normal but critical users of twitter, being dumb, with bad grammer (no/random capitalisation), and harsh, swearing if necessary. Each comment is in an array with a 'sentiment' score, i.e positive the comment is, or how sarcastic it is. 100 means very strongly positive, -100 means very negative. Make the really sassy and rude, unless they agree, then wayy too happy. Grammatical errors etc are okay, but remember the users are degenerates and like things like drama and controversial opinions, along with including a random aspect where opinions may actually be surprisingly liked/disliked at random. So the output should be in the format: [50, ['I agree with this', 60], ['I disagree with this', 20], ['This is the worst thing I have ever seen', 100]]"},
             {
