@@ -58,6 +58,12 @@
                     </div>
                 </li>
                 <li>
+                    <div class="stat-label">Likeness</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" id="likeness" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                    </div>
+                </li>
+                <li>
                     <div class="stat-label">Net Worth</div>
                     <div class="progress">
                         <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">$90M</div>
@@ -211,6 +217,36 @@
                             delay += 1000;
                         });
                     }
+
+                    // Function to abbreviate numbers
+                    function abbreviateNumber(value) {
+                        let newValue = value;
+                        if (value >= 1000) {
+                            const suffixes = ["", "k", "M", "B","T"];
+                            const suffixNum = Math.floor(("" + value).length / 3);
+                            let shortValue = '';
+                            for (let precision = 2; precision >= 1; precision--) {
+                                shortValue = parseFloat((suffixNum !== 0 ? (value / Math.pow(1000, suffixNum)) : value).toPrecision(precision));
+                                const dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g, '');
+                                if (dotLessShortValue.length <= 2) { break; }
+                            }
+                            newValue = shortValue + suffixes[suffixNum];
+                        }
+                        return newValue;
+                    }
+
+                    // Update stats
+                    const stats = data.stats[0];
+                    document.getElementById('reputation').style.width = stats.reputation + '%';
+                    document.getElementById('reputation').textContent = stats.reputation + '%';
+                    document.getElementById('hatred').style.width = stats.hatred + '%';
+                    document.getElementById('hatred').textContent = stats.hatred + '%';
+                    document.getElementById('popularity').style.width = Math.floor(stats.popularity) + '%';
+                    document.getElementById('popularity').textContent = Math.floor(stats.popularity) + '%';
+                    document.getElementById('likeness').style.width = Math.floor(stats.likeness) + '%';
+                    document.getElementById('likeness').textContent = Math.floor(stats.likeness) + '%';
+                    document.getElementById('networth').style.width = stats.networth + '%';
+                    document.getElementById('networth').textContent = '$' + abbreviateNumber(stats.networth) + 'M';
                 } else {
                     console.error('Failed to create post');
                 }
@@ -270,9 +306,9 @@
             const content = postContentInput.value.trim();
             const username = postUsernameInput.value.trim();
             const profilePicFile = profilePicFileInput.files[0];
-        
+
             let profilePicUrl = defaultProfilePicUrl;
-        
+
             if (profilePicFile) {
                 const reader = new FileReader();
                 reader.onload = function (event) {
@@ -293,7 +329,7 @@
         // Function to periodically fetch new posts
         function startFetchingPosts() {
             fetchMetrics();
-            setInterval(() => {fetchNewPosts(); fetchMetrics();}, Math.floor(Math.random() * 4000) + 1000); // Random interval between 1 and 5 seconds
+            setInterval(() => {fetchNewPosts(); fetchMetrics();}, Math.floor(Math.random() * 10000) + 1000); // Random interval between 1 and 5 seconds
         }
 
         // Start fetching posts when the page loads

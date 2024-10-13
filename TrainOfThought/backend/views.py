@@ -57,17 +57,22 @@ def create_post(request):
         "likes": post_data['likes'],
         "reposts": post_data['reposts']
     }
-
-    # WE AIN'T SAVIN' THIS BUCKAROOS
-    #try:
-        #post = Post.objects.create(**data)
-        #post.save()
-    #except Exception as e:
-    #    return JsonResponse({"error": str(e)}, status=400)
-
+    
     if bot.id == 0:
         posts = gpt_post_response(post_data['content'], bot.name)
         created_posts = []
+        sentiment = posts[0]
+
+        print("OLD: ", bot.popularity, sentiment)
+        # Call Sentiment Updating Script
+        likes = update_attributes(0, sentiment, bot.popularity)
+
+        bot = Bot.objects.get(id=post_data['bot'])
+        print("NEW: ", bot.popularity)
+
+        stats = []
+    
+
         for post_content in posts[1]:
             data = {
                 "bot": 1,
@@ -88,7 +93,17 @@ def create_post(request):
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
 
-        return JsonResponse({"message": 'success', "posts": created_posts}, safe=False)
+        stats.append({
+            "reputation": bot.reputation,
+            "hatred": bot.hatred,
+            "popularity": bot.popularity,
+            "likeness": bot.likeness,
+            "networth": bot.networth
+        })
+    
+        print (stats)
+
+        return JsonResponse({"message": 'success', "posts": created_posts, "stats": stats}, safe=False)
 
     return JsonResponse({"message": "Created Successfully"}, safe=False)
 
