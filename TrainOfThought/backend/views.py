@@ -15,7 +15,9 @@ def index(request):
         "reputation": int(bot.reputation),
         "hatred": int(bot.hatred),
         "popularity": int(bot.popularity),
-        "networth": "{:,.0f}".format(bot.networth / 1_000_000)
+        "networth": "{:,.0f}".format(bot.networth / 1_000_000),
+        "name": bot.name,
+        "image": bot.creator_id.image.url
     }
     return render(request, "TrainOfThought/index.html", {'stats': stats})
 
@@ -70,15 +72,12 @@ def create_post(request):
         created_posts = []
         sentiment = posts[0]
 
-        print("OLD: ", bot.popularity, sentiment)
         # Call Sentiment Updating Script
         likes = update_attributes(0, sentiment, bot.popularity)
 
         bot = Bot.objects.get(id=post_data['bot'])
-        print("NEW: ", bot.popularity)
 
         stats = []
-    
 
         for post_content in posts[1]:
             data = {
@@ -110,7 +109,7 @@ def create_post(request):
     
         print (stats)
 
-        return JsonResponse({"message": 'success', "posts": created_posts, "stats": stats}, safe=False)
+        return JsonResponse({"message": 'success', "posts": created_posts, "stats": stats, "name": bot.name}, safe=False)
 
     return JsonResponse({"message": "Created Successfully"}, safe=False)
 
@@ -140,6 +139,7 @@ def select_creator(request):
             my_bot.popularity = creator.default_popularity
             my_bot.networth = creator.networth
             my_bot.creator_id = creator
+            my_bot.name = creator.first_name + " " + creator.last_name
 
             my_bot.save()
 

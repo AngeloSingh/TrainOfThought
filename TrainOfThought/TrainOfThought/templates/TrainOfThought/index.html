@@ -37,7 +37,7 @@
 
         <div class="left-fixed">
             <img id="profile-picture" src="{{ stats.image }}" alt="Profile Picture Of Chosen Character">
-            <h4 id="character-name" class="d-flex justify-content-center align-items-center">{{ stats.me }}</h4>
+            <h4 id="character-name" class="d-flex justify-content-center align-items-center">{{ stats.name }}</h4>
             <ul class="list-unstyled">
             <li>
                 <div class="stat-label">Reputation</div>
@@ -70,8 +70,7 @@
             <!-- Posts will be added here -->
         </div><br />
         <form class="new-post-form" id="newPostForm">
-            <input type="text" id="postUsername" placeholder="What's your username?" required>
-            <input type="file" id="profilePicFile">
+            <div id="cachedUsername" style="font-weight: bold;"> {{ stats.name }}</div>
             <input type="text" id="postContent" placeholder="What's happening?" maxlength="100" required>
             <button type="submit">Tweet</button>
         </form>
@@ -82,8 +81,7 @@
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
         const postContentInput = document.getElementById('postContent');
-        const postUsernameInput = document.getElementById('postUsername');
-        const profilePicFileInput = document.getElementById('profilePicFile');
+        const cachedUsernameDiv = document.getElementById('cachedUsername');
 
         // Default profile picture URL
         const defaultProfilePicUrl = 'https://ih1.redbubble.net/image.5312645676.7021/st,small,507x507-pad,600x600,f8f8f8.jpg'; // Change to your default image URL
@@ -205,7 +203,7 @@
                 feed.removeChild(refreshingPost);
                 
                 if (data.message === 'success') {
-                    const newPost = createPostElement(username, profilePicUrl, content);
+                    const newPost = createPostElement(data.name, profilePicUrl, content);
                     feed.prepend(newPost);
                 
                     if (data.posts && data.posts.length > 0) {
@@ -213,7 +211,8 @@
                         console.log(data.posts);
                         data.posts.forEach(post => {
                             setTimeout(() => {
-                                const botPost = createPostElement(post.name, defaultProfilePicUrl, post.content);
+                                const randomUserString = 'User' + Math.floor(1000 + Math.random() * 9000);
+                                const botPost = createPostElement(randomUserString, defaultProfilePicUrl, post.content);
                                 feed.prepend(botPost);
                             }, delay);
                             delay += 1000;
@@ -300,32 +299,19 @@
                 document.getElementById('networth').innerText = "Networth " + data.metrics.networth;
                 document.getElementById('profile-picture').src = data.image;
             });
+
+            console.log(data.image);
         }
 
         // Function to handle form submission
         newPostForm.addEventListener('submit', function (e) {
             e.preventDefault(); // Prevent the default form submission
             const content = postContentInput.value.trim();
-            const username = postUsernameInput.value.trim();
-            const profilePicFile = profilePicFileInput.files[0];
-
-            let profilePicUrl = defaultProfilePicUrl;
-
-            if (profilePicFile) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    profilePicUrl = event.target.result;
-                    createPost(username, profilePicUrl, content);
-                };
-                reader.readAsDataURL(profilePicFile);
-            } else {
-                createPost(username, profilePicUrl, content);
-            }
+            const username = localStorage.getItem('cachedUsername');
+            createPost(username, defaultProfilePicUrl, content);
         
             // Clear input fields
             postContentInput.value = '';
-            postUsernameInput.value = '';
-            profilePicFileInput.value = '';
         });
 
         // Function to periodically fetch new posts
