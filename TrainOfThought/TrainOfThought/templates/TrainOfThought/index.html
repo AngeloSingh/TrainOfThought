@@ -147,6 +147,12 @@
                     </div>
                 </li>
                 <li>
+                    <div class="stat-label">Likeness</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" id="likeness" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                    </div>
+                </li>
+                <li>
                     <div class="stat-label">Net Worth</div>
                     <div class="progress">
                         <div class="progress-bar bg-warning" id="networth" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
@@ -176,8 +182,6 @@
         </div>
     </div>
     <script>
-
-
         const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
         const feed = document.getElementById('feed');
         const newPostForm = document.getElementById('newPostForm');
@@ -189,7 +193,7 @@
         const defaultProfilePicUrl = 'https://ih1.redbubble.net/image.5312645676.7021/st,small,507x507-pad,600x600,f8f8f8.jpg'; // Change to your default image URL
 
         // Function to create a new post element
-        function createPost(username, profilePicUrl, content) {
+        function createPostElement(username, profilePicUrl, content) {
             const postDiv = document.createElement('div');
             postDiv.classList.add('post');
 
@@ -221,77 +225,58 @@
 
             // Like button
             const likeButton = document.createElement('img');
-            likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png'; // Default heart icon
+            likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833300.png';
             likeButton.classList.add('like-button');
             likeButton.alt = 'Like';
 
             // Like count
             const likeCount = document.createElement('span');
             likeCount.classList.add('like-count');
-            likeCount.textContent = '0'; // Initial like count
+            likeCount.textContent = '0';
 
             // Retweet button
             const retwButton = document.createElement('img');
-            retwButton.src = 'https://cdn-icons-png.flaticon.com/512/126/126498.png'; // Default retweet icon
+            retwButton.src = 'https://cdn-icons-png.flaticon.com/512/126/126498.png';
             retwButton.classList.add('retw-button');
             retwButton.alt = 'Retweet';
 
             // Retweet count
             const retwCount = document.createElement('span');
             retwCount.classList.add('retw-count');
-            retwCount.textContent = '0'; // Initial retweet count
+            retwCount.textContent = '0';
 
-            let liked = false; // Flag to track if the post is liked or not
+            let liked = false;
             let retweeted = false;
 
-            // Event listener to handle like/unlike functionality
             likeButton.addEventListener('click', function () {
                 let count = parseInt(likeCount.textContent, 10);
-
                 if (!liked) {
                     liked = true;
-                    likeCount.textContent = count + 1; // Like, increase count
-                    likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; // Liked heart icon (filled)
+                    likeCount.textContent = count + 1;
+                    likeButton.src = 'https://cdn-icons-png.flaticon.com/512/833/833472.png';
                 }
             });
-
+        
             retwButton.addEventListener('click', function () {
                 let count = parseInt(retwCount.textContent, 10);
-
                 if (!retweeted) {
                     retweeted = true;
                     retwCount.textContent = count + 1;
                 }
-            })
-
+            });
+        
             likeRetweetSection.appendChild(likeButton);
             likeRetweetSection.appendChild(likeCount);
             likeRetweetSection.appendChild(retwButton);
             likeRetweetSection.appendChild(retwCount);
-
-
-            // Append username, content, timestamp, and like section to content section
+        
             contentSection.appendChild(userDiv);
             contentSection.appendChild(contentDiv);
             contentSection.appendChild(timestampDiv);
-            // Append the like/retweet section to the content section
             contentSection.appendChild(likeRetweetSection);
-
-            // Append profile picture and content section to post
+        
             postDiv.appendChild(profilePic);
             postDiv.appendChild(contentSection);
-
-            /*
-            url: http://127.0.0.1:8000/create_post
-            post request
-            body: {
-                    "bot":0,
-                    "content":"hello",
-                    "image":"",
-                    "likes":0,
-                    "reposts":0
-                },
-            */
 
             let num_likes = 0;
             let num_retweets = 0;
@@ -362,9 +347,8 @@
             postContentInput.value = '';
         });
 
-        async function submitPost(content, username, profilePicUrl) {
-            const csrf_token = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
+        async function createPost(username, profilePicUrl, content) {
             try {
                 const response = await fetch('http://127.0.0.1:8000/create_post/', {
                     method: 'POST',
@@ -375,6 +359,8 @@
                     body: JSON.stringify({
                         bot: 0,
                         content: content,
+                        username: username,
+                        profile_pic_url: profilePicUrl,
                         likes: 0,
                         reposts: 0,
                     }),
@@ -382,20 +368,50 @@
 
                 const data = await response.json();
                 if (data.message === 'success') {
-                    const newPost = createPost(username, profilePicUrl, content);
+                    const newPost = createPostElement(username, profilePicUrl, content);
                     feed.prepend(newPost);
-
+                
                     if (data.posts && data.posts.length > 0) {
                         let delay = 1000;
                         console.log(data.posts);
                         data.posts.forEach(post => {
                             setTimeout(() => {
-                                const botPost = createPost(post.name, defaultProfilePicUrl, post.content);
+                                const botPost = createPostElement(post.name, defaultProfilePicUrl, post.content);
                                 feed.prepend(botPost);
                             }, delay);
                             delay += 1000;
                         });
                     }
+
+                    // Function to abbreviate numbers
+                    function abbreviateNumber(value) {
+                        let newValue = value;
+                        if (value >= 1000) {
+                            const suffixes = ["", "k", "M", "B","T"];
+                            const suffixNum = Math.floor(("" + value).length / 3);
+                            let shortValue = '';
+                            for (let precision = 2; precision >= 1; precision--) {
+                                shortValue = parseFloat((suffixNum !== 0 ? (value / Math.pow(1000, suffixNum)) : value).toPrecision(precision));
+                                const dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g, '');
+                                if (dotLessShortValue.length <= 2) { break; }
+                            }
+                            newValue = shortValue + suffixes[suffixNum];
+                        }
+                        return newValue;
+                    }
+
+                    // Update stats
+                    const stats = data.stats[0];
+                    document.getElementById('reputation').style.width = stats.reputation + '%';
+                    document.getElementById('reputation').textContent = stats.reputation + '%';
+                    document.getElementById('hatred').style.width = stats.hatred + '%';
+                    document.getElementById('hatred').textContent = stats.hatred + '%';
+                    document.getElementById('popularity').style.width = Math.floor(stats.popularity) + '%';
+                    document.getElementById('popularity').textContent = Math.floor(stats.popularity) + '%';
+                    document.getElementById('likeness').style.width = Math.floor(stats.likeness) + '%';
+                    document.getElementById('likeness').textContent = Math.floor(stats.likeness) + '%';
+                    document.getElementById('networth').style.width = stats.networth + '%';
+                    document.getElementById('networth').textContent = '$' + abbreviateNumber(stats.networth) + 'M';
                 } else {
                     console.error('Failed to create post');
                 }
@@ -485,10 +501,37 @@
                 handleMetricChange(initialNetworth, Number(data.metrics.networth), "Networth");
             });
         }
+
+        // Function to handle form submission
+        newPostForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            const content = postContentInput.value.trim();
+            const username = postUsernameInput.value.trim();
+            const profilePicFile = profilePicFileInput.files[0];
+
+            let profilePicUrl = defaultProfilePicUrl;
+
+            if (profilePicFile) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    profilePicUrl = event.target.result;
+                    createPost(username, profilePicUrl, content);
+                };
+                reader.readAsDataURL(profilePicFile);
+            } else {
+                createPost(username, profilePicUrl, content);
+            }
+        
+            // Clear input fields
+            postContentInput.value = '';
+            postUsernameInput.value = '';
+            profilePicFileInput.value = '';
+        });
+
         // Function to periodically fetch new posts
         function startFetchingPosts() {
             fetchMetrics();
-            setInterval(() => {fetchNewPosts(); fetchMetrics();}, Math.floor(Math.random() * 4000) + 1000); // Random interval between 1 and 5 seconds
+            setInterval(() => {fetchNewPosts(); fetchMetrics();}, Math.floor(Math.random() * 10000) + 1000); // Random interval between 1 and 5 seconds
         }
 
         // Start fetching posts when the page loads

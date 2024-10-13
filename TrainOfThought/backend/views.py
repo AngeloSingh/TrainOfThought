@@ -57,42 +57,55 @@ def create_post(request):
         "likes": post_data['likes'],
         "reposts": post_data['reposts']
     }
-
-    try:
-        post = Post.objects.create(**data)
-        post.save()
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
-
+    
     if bot.id == 0:
         posts = gpt_post_response(post_data['content'], bot.name)
         created_posts = []
+        sentiment = posts[0]
+
+        print("OLD: ", bot.popularity, sentiment)
+        # Call Sentiment Updating Script
+        likes = update_attributes(0, sentiment, bot.popularity)
+
+        bot = Bot.objects.get(id=post_data['bot'])
+        print("NEW: ", bot.popularity)
+
+        stats = []
+    
+
         for post_content in posts[1]:
             data = {
-                "bot": bot,
+                "bot": 1,
                 "content": post_content[0],
                 #"image": post_data['image'],
                 "likes": post_data['likes'],
                 "reposts": post_data['reposts']
             }
             try:
-                post = Post.objects.create(**data)
-                post.save()
                 created_posts.append({
-                    "id": post.id,
-                    "bot": post.bot.id,
-                    "content": post.content,
-                    #"image": post.image,
-                    "likes": post.likes,
-                    "reposts": post.reposts,
-                    "name": post.bot.name
+                    "bot": 1,
+                    "content": post_content[0],
+                    #"image": post_data['image'],
+                    "likes": post_data['likes'],
+                    "reposts": post_data['reposts'],
+                    "name": bot.name
                 })
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
 
-        return JsonResponse({"message": 'success', "posts": created_posts}, safe=False)
+        stats.append({
+            "reputation": bot.reputation,
+            "hatred": bot.hatred,
+            "popularity": bot.popularity,
+            "likeness": bot.likeness,
+            "networth": bot.networth
+        })
+    
+        print (stats)
 
-    return JsonResponse({"message": "success"}, safe=False)
+        return JsonResponse({"message": 'success', "posts": created_posts, "stats": stats}, safe=False)
+
+    return JsonResponse({"message": "Created Successfully"}, safe=False)
 
 def homepage(request):
     creators = Creator.objects.all()
